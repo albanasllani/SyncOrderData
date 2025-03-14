@@ -2,6 +2,7 @@
 
 namespace SyncOrderData\Service;
 
+
 use DateTimeInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
@@ -13,41 +14,53 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class WebhookService
 {
-    private SystemConfigService $configService;
-    private HttpClientInterface $httpClient;
+
     private LoggerInterface $logger;
 
+    protected SystemConfigService $systemConfigService;
 
     public function __construct(
-        HttpClientInterface $httpClient,
         LoggerInterface     $logger,
-        SystemConfigService $configService
+        SystemConfigService $systemConfigService,
     )
     {
-        $this->HttpClientInterface = $httpClient;
-        $this->LoggerInterface = $logger;
-        $this->SystemConfigService = $configService;
+        $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
 
     }
 
     public function sendWebhook(OrderEntity $order): void
     {
-        $webhookUrl = 'https://webhook.site/29032600-2274-4349-ab89-d59f843c2058';
-
+        $webhookUrl = $this->systemConfigService->getString('SyncOrderData.config.ddropsWebHookUrl');
+//      $webhookUrl = 'https://webhook.site/29032600-2274-4349-ab89-d59f843c2058';
         $payload = $this->formatOrderData($order);
 
-
         try {
-            $response = $this->httpClient->request('POST', $webhookUrl, [
-                'json' => $payload,
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
 
-            $this->logger->info('Webhook sent', ['status' => $response->getStatusCode(), 'payload' => $payload]);
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                //  Live  https://webhook.site/5138e751-daad-4b28-b540-cd87b51131a1
+                //  My URL to test: https://webhook.site/29032600-2274-4349-ab89-d59f843c2058
+                CURLOPT_URL => $webhookUrl,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json'
+                ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $this->logger->info('Webhook sent 199555778 ', ['status' => $response]);
         } catch (\Exception $e) {
-            $this->logger->error('Webhook failed', ['error' => $e->getMessage()]);
+            $this->logger->error('Webhook failed 666699999', ['error' => $e->getMessage()]);
         }
     }
 
@@ -57,6 +70,9 @@ class WebhookService
         $customer = $order->getOrderCustomer();
         $billingAddress = $order->getBillingAddress();
         $shippingAddress = $order->getDeliveries()->first()?->getShippingOrderAddress();
+        $transaction = $order->getTransactions()->first();
+        $delivery = $order->getDeliveries()->first();
+
 
         return [
             'order' => [
@@ -74,17 +90,17 @@ class WebhookService
                 'total_amount' => $order->getAmountTotal(),
                 'currency' => $order->getCurrency()->getIsoCode(),
                 'payment' => [
-                    'payment_method' => $order->getTransactions()->first()?->getPaymentMethod()->getName(),
-                    'payment_provider' => $order->getTransactions()->first()?->getPaymentMethod()->getHandlerIdentifier(),
-                    'payment_state' => $order->getTransactions()->first()?->getStateMachineState()->getTechnicalName()
+                    'payment_method' => $transaction?->getPaymentMethod()?->getName(),
+                    'payment_provider' => $transaction?->getPaymentMethod()?->getHandlerIdentifier(),
+                    'payment_state' => $transaction?->getStateMachineState()?->getTechnicalName(),
                 ],
                 'delivery' => [
-                    'delivery_method' => $order->getDeliveries()->first()?->getShippingMethod()->getName(),
-                    'tracking_number' => $order->getDeliveries()->first()?->getTrackingCodes()[0] ?? null,
-                    'delivery_status' => $order->getDeliveries()->first()?->getStateMachineState()->getTechnicalName(),
-                    'estimated_delivery_date' => $order->getDeliveries()->first()?->getShippingDateEarliest()?->format(\DateTime::ATOM)
+                    'delivery_method' => $delivery?->getShippingMethod()?->getName(),
+                    'tracking_number' => $delivery?->getTrackingCodes()[0] ?? null,
+                    'delivery_status' => $delivery?->getStateMachineState()?->getTechnicalName(),
+                    'estimated_delivery_date' => $delivery?->getShippingDateEarliest()?->format(DateTimeInterface::ATOM),
                 ],
-                'order_status' => $order->getStateMachineState()->getTechnicalName()
+                'order_status' => $order->getStateMachineState()?->getTechnicalName(),
             ]
         ];
     }
