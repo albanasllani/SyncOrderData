@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+    <!-- <card>-->
+    <!--        <title>Order Webhook Settings</title>-->
+    <!--        <input-field name="enableSubscriber" type="boolean" label="Enable Webhook Subscriber" defaultValue="true"/>-->
+    <!--        <input-field name="webhookUrl" type="text" label="Webhook URL" placeholder="Enter Webhook URL"/>-->
+    <!--        <input-field name="apiKey" type="text" label="API Key" placeholder="Optional API Key"/>-->
+    <!--        <input-field name="apiSecret" type="text" label="API Secret" placeholder="Optional API Secret"/>-->
+    <!--    </card>-->
+    <card>
+        <title>Subscriber Status</title>
+        <input-field type="bool">
+            <name>ddropsSubscriberStatus</name>
+            <label lang="en-EN">Activate</label>
+            <label lang="de-DE">Aktivieren</label>
+            <type>bool</type>
+            <defaultValue>false</defaultValue>
+            <required>true</required>
+        </input-field>
+    </card>
+    <card>
+        <title>Webhook Configuration</title>
+
+        <input-field>
+            <name>ddropsWebHookUrl</name>
+            <label lang="en-GB">Webhook URL</label>
+            <label lang="de-DE">Webhook URL</label>
+            <type>url</type>
+            <defaultValue>https://webhook.site/5138e751-daad-4b28-b540-cd87b51131a1</defaultValue>
+        </input-field>
+
+        <input-field>
+            <name>ddropsApikey</name>
+            <label lang="en-GB">ApiKey</label>
+            <label lang="de-DE">ApiKey</label>
+            <defaultValue>X232424</defaultValue>
+            <type>number</type>
+        </input-field>
+
+        <input-field>
+            <name>ddropsSecret</name>
+            <label lang="en-GB">ApiSecret</label>
+            <label lang="de-DE">ApiSecret</label>
+            <defaultValue>X3330KD3O2KDK</defaultValue>
+            <type>password</type>
+        </input-field>
+
+
+    </card>
+
+
+</config>

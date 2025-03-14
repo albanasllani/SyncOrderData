@@ -1,0 +1,35 @@
+{
+    "name": "sync-order-data/sync-order-data",
+    "description": "This plugin syncs order data with webhook",
+    "type": "shopware-platform-plugin",
+    "version": "1.0.0",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Alban @Dutchdrops"
+        }
+    ],
+    "require": {
+        "shopware/core": "~6.6.0"
+    },
+    "extra": {
+        "shopware-plugin-class": "SyncOrderData\\SyncOrderData",
+        "plugin-icon": "src/Resources/public/plugin.png",
+        "label": {
+            "de-DE": "Sync Order Data with webhook",
+            "en-GB": "Sync Order Data with webhook"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "SyncOrderData\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SyncOrderData\\Tests\\": "tests/"
+        }
+    }
+}
