@@ -2,13 +2,7 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
-    <!-- <card>-->
-    <!--        <title>Order Webhook Settings</title>-->
-    <!--        <input-field name="enableSubscriber" type="boolean" label="Enable Webhook Subscriber" defaultValue="true"/>-->
-    <!--        <input-field name="webhookUrl" type="text" label="Webhook URL" placeholder="Enter Webhook URL"/>-->
-    <!--        <input-field name="apiKey" type="text" label="API Key" placeholder="Optional API Key"/>-->
-    <!--        <input-field name="apiSecret" type="text" label="API Secret" placeholder="Optional API Secret"/>-->
-    <!--    </card>-->
+
     <card>
         <title>Subscriber Status</title>
         <input-field type="bool">
@@ -17,9 +11,9 @@
             <label lang="de-DE">Aktivieren</label>
             <type>bool</type>
             <defaultValue>false</defaultValue>
-            <required>true</required>
         </input-field>
     </card>
+
     <card>
         <title>Webhook Configuration</title>
 

@@ -2,18 +2,55 @@
 
 namespace SyncOrderData\MessageQueue\Handler;
 
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use SyncOrderData\MessageQueue\Message\OrderWebhookMessage;
-use SyncOrderData\Service\OrderWebhookSender;
+use SyncOrderData\Service\WebhookService;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Context;
 
 #[AsMessageHandler]
 class OrderWebhookHandler
 {
-    public function __invoke(OrderWebhookMessage $message)
-    {
-        dd($message);
-        // ... do some work - like sending an SMS message!
+    private WebhookService $webhookService;
+    private EntityRepository $orderRepository;
+    private LoggerInterface $logger;
 
+    public function __construct(
+        WebhookService $webhookService,
+        EntityRepository $orderRepository,
+        LoggerInterface $logger
+    ) {
+        $this->webhookService = $webhookService;
+        $this->orderRepository = $orderRepository;
+        $this->logger = $logger;
+    }
+
+    public function __invoke(OrderWebhookMessage $message): void
+    {
+        $orderId = $message->getOrderId();
+
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociations([
+            'transactions.stateMachineState',
+            'deliveries.stateMachineState',
+            'stateMachineState',
+            'transactions.paymentMethod',
+            'deliveries.shippingMethod',
+            'lineItems',
+            'currency',
+            'orderCustomer',
+            'billingAddress',
+            'deliveries.shippingOrderAddress'
+        ]);
+
+        $order = $this->orderRepository->search($criteria, Context::createDefaultContext())->first();
+
+        if (!$order) {
+            $this->logger->error(sprintf('Order with ID %s not found.', $orderId));
+            return;
+        }
+        $this->webhookService->sendWebhook($order);
     }
 }
-

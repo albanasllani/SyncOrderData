@@ -2,11 +2,11 @@
 
 namespace SyncOrderData\Service;
 
-
 use DateTimeInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -18,21 +18,24 @@ class WebhookService
     private LoggerInterface $logger;
 
     protected SystemConfigService $systemConfigService;
+    private MessageBusInterface $bus;
 
     public function __construct(
         LoggerInterface     $logger,
         SystemConfigService $systemConfigService,
+        MessageBusInterface $bus
     )
     {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
+        $this->bus = $bus;
 
     }
 
     public function sendWebhook(OrderEntity $order): void
     {
         $webhookUrl = $this->systemConfigService->getString('SyncOrderData.config.ddropsWebHookUrl');
-//      $webhookUrl = 'https://webhook.site/29032600-2274-4349-ab89-d59f843c2058';
+
         $payload = $this->formatOrderData($order);
 
         try {
@@ -58,9 +61,9 @@ class WebhookService
             $response = curl_exec($curl);
             curl_close($curl);
 
-            $this->logger->info('Webhook sent 199555778 ', ['status' => $response]);
+            $this->logger->info('Webhook sent ', ['status' => $response]);
         } catch (\Exception $e) {
-            $this->logger->error('Webhook failed 666699999', ['error' => $e->getMessage()]);
+            $this->logger->error('Webhook failed ', ['error' => $e->getMessage()]);
         }
     }
 
@@ -82,7 +85,8 @@ class WebhookService
                     'customer_id' => $customer->getCustomerId(),
                     'name' => $customer->getFirstName() . ' ' . $customer->getLastName(),
                     'email' => $customer->getEmail(),
-                    'phone' => $customer->getRemoteAddress() // No direct phone field in Shopware OrderCustomer
+                    'phone' => $billingAddress->getPhoneNumber() ?? null
+
                 ],
                 'shipping_address' => $this->formatAddress($shippingAddress),
                 'billing_address' => $this->formatAddress($billingAddress),

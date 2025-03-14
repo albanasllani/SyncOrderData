@@ -6,15 +6,16 @@ use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
 
 class OrderWebhookMessage implements AsyncMessageInterface
 {
-    private string $content;
+    private string $orderId;
 
-    public function __construct(string $content)
+
+    public function __construct(string $orderId)
     {
-        $this->content = $content;
+        $this->orderId = $orderId;
     }
 
-    public function getContent(): string
+    public function getOrderId(): string
     {
-        return $this->content;
+        return $this->orderId;
     }
 }

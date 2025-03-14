@@ -20,30 +20,16 @@
         <service id="SyncOrderData\Service\WebhookService">
             <argument type="service" id="monolog.logger"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface"/>
 
         </service>
 
+        <service id="SyncOrderData\MessageQueue\Handler\OrderWebhookHandler">
+            <argument type="service" id="SyncOrderData\Service\WebhookService"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="monolog.logger"/>
+            <tag name="messenger.message_handler"/>
+        </service>
 
-        <!--        <service id="SyncOrderData\Core\Content\Flow\Dispatching\Action\WebhookSendDataAction">-->
-        <!--            <argument type="service" id="tag.repository"/>-->
-        <!--            <tag name="flow.action" priority="600" key="action.create.tag"/>-->
-        <!--        </service>-->
-
-
-        <!--        <service id="SyncOrderData\Core\Content\Subscriber\BusinessEventCollectorSubscriber">-->
-        <!--            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventCollector"/>-->
-        <!--            <tag name="kernel.event_subscriber"/>-->
-        <!--        </service>-->
-
-        <!--          <service id="SyncOrderData\Core\Checkout\Flow\Action\SendOrderWebhookAction">-->
-        <!--            <argument type="service" id="order.repository"/>-->
-        <!--            <argument type="service" id="SyncOrderData\Service\WebhookService"/> <tag name="shopware.flow.action"/>-->
-        <!--        </service>-->
-
-        <!--        <service id="SyncOrderData\MessageHandler\OrderWebhookMessageHandler">-->
-        <!--            <tag name="messenger.message_handler"/>-->
-        <!--            <argument type="service" id="SyncOrderData\Service\WebhookService"/>-->
-
-        <!--        </service>-->
     </services>
 </container>
