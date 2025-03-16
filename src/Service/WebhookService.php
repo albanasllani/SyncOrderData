@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SyncOrderData\Service;
 
@@ -7,7 +7,6 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -75,7 +74,17 @@ class WebhookService
         $shippingAddress = $order->getDeliveries()->first()?->getShippingOrderAddress();
         $transaction = $order->getTransactions()->first();
         $delivery = $order->getDeliveries()->first();
+ 
+//        $this->logger->debug('Debug webhook service ', ['shippingAddress 658741268' => $shippingAddress]);
+//        $this->logger->debug('Debug webhook service ', ['billingAddress 969657896' => $billingAddress]);
 
+        $this->logger->debug('Billing Country Debug', [
+            'country' => $billingAddress->getCountry() ? $billingAddress->getCountry()->getName() : 'NULL'
+        ]);
+
+        $this->logger->debug('Shipping Country Debug', [
+            'country' => $shippingAddress?->getCountry() ? $shippingAddress->getCountry()->getName() : 'NULL'
+        ]);
 
         return [
             'order' => [
@@ -111,13 +120,14 @@ class WebhookService
 
     private function formatAddress(?OrderAddressEntity $address): array
     {
+
         return $address ? [
             'name' => $address->getFirstName() . ' ' . $address->getLastName(),
             'street' => $address->getStreet(),
             'city' => $address->getCity(),
             'state' => $address->getCountryState()?->getName(),
             'postal_code' => $address->getZipcode(),
-            'country' => $address->getCountry()?->getName()
+            'country' => $address->getCountry() ? $address->getCountry()->getName() : null // Safely handle null
         ] : [];
     }
 

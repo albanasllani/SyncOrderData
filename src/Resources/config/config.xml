@@ -12,6 +12,7 @@
             <type>bool</type>
             <defaultValue>false</defaultValue>
         </input-field>
+
     </card>
 
     <card>
@@ -23,6 +24,7 @@
             <label lang="de-DE">Webhook URL</label>
             <type>url</type>
             <defaultValue>https://webhook.site/5138e751-daad-4b28-b540-cd87b51131a1</defaultValue>
+
         </input-field>
 
         <input-field>
@@ -30,7 +32,8 @@
             <label lang="en-GB">ApiKey</label>
             <label lang="de-DE">ApiKey</label>
             <defaultValue>X232424</defaultValue>
-            <type>number</type>
+            <type>password</type>
+
         </input-field>
 
         <input-field>
@@ -39,6 +42,7 @@
             <label lang="de-DE">ApiSecret</label>
             <defaultValue>X3330KD3O2KDK</defaultValue>
             <type>password</type>
+
         </input-field>
 
 

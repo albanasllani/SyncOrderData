@@ -24,12 +24,28 @@
 
         </service>
 
+        <service id="SyncOrderData\Core\Content\Flow\Dispatching\Action\SendOrderStatusUpdateAction">
+            <argument type="service" id="SyncOrderData\Service\WebhookService"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Symfony\Component\Messenger\MessageBusInterface"/>
+            <tag name="kernel.event_subscriber"/>
+            <tag name="flow.action" priority="600" key="action.send_order_status_update"/>
+        </service>
+
+        <service id="SyncOrderData\Core\Content\Flow\Subscriber\FlowSubscriber">
+            <argument type="service" id="Shopware\Core\Framework\Event\BusinessEventCollector"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="SyncOrderData\MessageQueue\Handler\OrderWebhookHandler">
             <argument type="service" id="SyncOrderData\Service\WebhookService"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="monolog.logger"/>
+
             <tag name="messenger.message_handler"/>
         </service>
+
 
     </services>
 </container>

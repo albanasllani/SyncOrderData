@@ -18,10 +18,11 @@ class OrderWebhookHandler
     private LoggerInterface $logger;
 
     public function __construct(
-        WebhookService $webhookService,
+        WebhookService   $webhookService,
         EntityRepository $orderRepository,
-        LoggerInterface $logger
-    ) {
+        LoggerInterface  $logger
+    )
+    {
         $this->webhookService = $webhookService;
         $this->orderRepository = $orderRepository;
         $this->logger = $logger;
@@ -32,6 +33,19 @@ class OrderWebhookHandler
         $orderId = $message->getOrderId();
 
         $criteria = new Criteria([$orderId]);
+//        $criteria->addAssociations([
+//            'transactions.stateMachineState',
+//            'deliveries.stateMachineState',
+//            'stateMachineState',
+//            'transactions.paymentMethod',
+//            'deliveries.shippingMethod',
+//            'lineItems',
+//            'currency',
+//            'orderCustomer',
+//            'billingAddress',
+//            'deliveries.shippingOrderAddress'
+//        ]);
+
         $criteria->addAssociations([
             'transactions.stateMachineState',
             'deliveries.stateMachineState',
@@ -42,7 +56,12 @@ class OrderWebhookHandler
             'currency',
             'orderCustomer',
             'billingAddress',
-            'deliveries.shippingOrderAddress'
+            'billingAddress.country',
+            'billingAddress.countryState',
+            'deliveries.shippingOrderAddress',
+            'deliveries.shippingOrderAddress.country',
+            'deliveries.shippingOrderAddress.countryState'
+
         ]);
 
         $order = $this->orderRepository->search($criteria, Context::createDefaultContext())->first();

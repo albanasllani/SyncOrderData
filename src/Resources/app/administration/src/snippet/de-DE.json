@@ -1,0 +1,13 @@
+{
+    "sw-flow": {
+        "actions": {
+            "group": {
+                "WebHooks": "WebHooks"
+            },
+            "label": "Send Order Status to Webhook",
+            "description": "Sends the order status data to configured webhook."
+        }
+    }
+}
+
+

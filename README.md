@@ -22,6 +22,7 @@ The data will be sent to the following webhook URL:
 
 1. Download or clone the repository.
 2. Configure the webhook URL in the settings file
+3. Run bin/console messenger:consume async -vv on the command line so you can execute queued messages.
 
 ## Usage
 
