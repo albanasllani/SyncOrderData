@@ -54,7 +54,7 @@ Component.override('sw-flow-sequence-action', {
                         group: 'WebHooks',
                         value: actionName,
                         icon: WEBHOOK_ACTION.ICON,
-                        label: this.$tc('WEBHOOK_ACTION.LABEL'),
+                        label: this.$tc('sw-flow.actions.label'),
                     };
                 default:
                     return this.$super('getActionTitle', actionName);

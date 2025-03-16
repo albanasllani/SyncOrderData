@@ -31,20 +31,7 @@ class OrderWebhookHandler
     public function __invoke(OrderWebhookMessage $message): void
     {
         $orderId = $message->getOrderId();
-
         $criteria = new Criteria([$orderId]);
-//        $criteria->addAssociations([
-//            'transactions.stateMachineState',
-//            'deliveries.stateMachineState',
-//            'stateMachineState',
-//            'transactions.paymentMethod',
-//            'deliveries.shippingMethod',
-//            'lineItems',
-//            'currency',
-//            'orderCustomer',
-//            'billingAddress',
-//            'deliveries.shippingOrderAddress'
-//        ]);
 
         $criteria->addAssociations([
             'transactions.stateMachineState',

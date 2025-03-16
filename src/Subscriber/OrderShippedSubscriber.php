@@ -7,6 +7,7 @@ use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use SyncOrderData\MessageQueue\Message\OrderWebhookMessage;
 use SyncOrderData\Service\WebhookService;
@@ -44,6 +45,9 @@ class OrderShippedSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     public function onOrderShipped(OrderStateMachineStateChangeEvent $event): void
     {
         $subscriberActive = $this->systemConfigService->getInt('SyncOrderData.config.ddropsSubscriberStatus');

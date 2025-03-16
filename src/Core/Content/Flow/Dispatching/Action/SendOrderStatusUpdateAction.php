@@ -60,16 +60,15 @@ class SendOrderStatusUpdateAction extends FlowAction implements EventSubscriberI
 
         $subscriberActive = $this->systemConfigService->getInt('SyncOrderData.config.ddropsSubscriberStatus');
 
-        if ($subscriberActive == 1) {
-            return;
-        }
+        if ($subscriberActive === 0) {
 
-        if (!$flow->hasStore(OrderAware::ORDER_ID)) {
-            return;
-        }
-        $orderId = $flow->getStore(OrderAware::ORDER_ID);
+            if (!$flow->hasStore(OrderAware::ORDER_ID)) {
+                return;
+            }
+            $orderId = $flow->getStore(OrderAware::ORDER_ID);
 
-        $this->messageBus->dispatch(new OrderWebhookMessage($orderId));
+            $this->messageBus->dispatch(new OrderWebhookMessage($orderId));
+        }
 
 
     }
